@@ -1,111 +1,136 @@
-# DangoMusic City Echoes
+# CityEchoes-In-DangoMusic
 
-DangoMusic 的**附属 mod（addon）**，把「都市回响 / City Echoes」这套 3D 歌词演出从本体里拆出来独立交付。
+**English** | [简体中文](README.zh-CN.md)
 
-存在的理由是解耦：本体还在活跃更新，演出功能原本合并在它的 jar 里，本体每次重构都可能把演出弄坏。拆成 addon 之后，两者可以各自升级，只要注入点对得上就能继续工作。
+An **addon mod** for [DangoMusic](https://github.com/Sorihiko/DangoMusic) that ships the
+"City Echoes" (都市回响) 3D lyric performance as a standalone jar instead of a part of the main mod.
 
-- 本体：<https://github.com/Sorihiko/DangoMusic>
-- 演出效果出处：<https://github.com/Celine258/idea-from-limbus-company-dancing-lyrics>
+The point is decoupling. DangoMusic is actively developed, and this performance used to live inside
+its jar — every refactor upstream could break it. As an addon, the two can be updated independently
+as long as the injection points still line up.
 
-## 它做什么
+- Host mod: <https://github.com/Sorihiko/DangoMusic>
+- Original effect: <https://github.com/Celine258/idea-from-limbus-company-dancing-lyrics>
 
-在原版 3D 歌词之外，新增**一种歌词呈现方式**：歌词逐字漂浮在世界里，带波浪、跳跃、倾斜、乱序退场、演唱强调等演出，可以配深辉光、翻译行、彩虹配色。
+## What it does
 
-它**不修改**本体的播放器、歌单、音源等任何既有功能——只在设置页里多出一个标签页。
+Adds **one extra way to present lyrics**, on top of the stock 3D lyrics: letters float in the world
+one by one, with wave motion, jumps, tilt, a scrambled exit and singing emphasis. Optional deep glow,
+a translation line, and rainbow colouring.
 
-## 运行要求
+It does **not** touch the player, playlists, audio sources or any other existing feature of the host
+mod — it only adds a third tab to DangoMusic's settings screen.
 
-| 项目 | 要求 |
+## Requirements
+
+| | |
 |---|---|
-| Minecraft | 1.20.1（Forge 47.x）或 1.21.1（NeoForge 21.1.x） |
-| Java | 17（1.20.1）/ 21（1.21.1） |
-| DangoMusic | **必须** 1.7.0 或更高，版本号需与加载器对应 |
-| 客户端 | 纯客户端 mod，服务端不需要安装 |
+| Minecraft | 1.20.1 (Forge 47.x) or 1.21.1 (NeoForge 21.1.x) |
+| Java | 17 for 1.20.1 / 21 for 1.21.1 |
+| DangoMusic | **required**, 1.7.0 or newer, matching your loader |
+| Side | client only — nothing to install on the server |
 
-## 安装
+## Installation
 
-1. 先装好 DangoMusic 本体；
-2. 把 `DangoMusic-CityEchoes-<version>+<mc>-<loader>.jar` 放进 `mods/`；
-3. 进游戏打开 DangoMusic 的音乐界面 → 设置，标签栏会多出第三个「City Echoes / 都市回响」。
+1. Install DangoMusic first.
+2. Drop `CityEchoes-In-DangoMusic-<version>+<mc>-<loader>.jar` into `mods/`.
+3. In game, open the DangoMusic music screen → settings. A third tab, **City Echoes**, is there.
 
-所有配置项都在那个标签页里，分组头带模块总开关——关掉即停止渲染，行为和内置模块一致。配置写在本体的 `config/dangomusic/config.json` 里，和本体其它模块同一个文件。
+Everything configurable lives in that tab. Each group header carries the module's master switch —
+turning it off stops rendering entirely, exactly like a built-in module. Values are written to the
+host mod's `config/dangomusic/config.json`, the same file as its own modules.
 
-## 实现方式（也解释了它的脆弱点）
+## How it works (and why it is fragile)
 
-addon 不改本体源码，而是用 SpongePowered Mixin 在运行期注入四个点：
+The addon does not patch DangoMusic's source. It injects six points at runtime with
+SpongePowered Mixin:
 
-| 目标类 | 注入内容 |
+| Target | Injection |
 |---|---|
-| `DangoMusic#init` | 在本体扫描模块之前注册 `CityEchoesModule` |
-| `SettingsPage#buildSettings` | 在返回的两个标签页后面追加第三个 |
-| `SettingsPage#drawTabs` | 把两个标签换成三个 |
-| `SettingsPage#<init>` | 往下拉框文案表里塞入本模块的选项 |
-| `I18n#getChinese` | 补充中文词条 |
-| `LyricsModule` | 模块启用时接管原版 3D 歌词与 HUD 的渲染 |
+| `DangoMusic#init` | register `CityEchoesModule` before the host scans its modules |
+| `SettingsPage#buildSettings` | append a third tab to the returned list |
+| `SettingsPage#drawTabs` | draw three labels instead of two |
+| `SettingsPage#<init>` | add this module's dropdown labels to the choice map |
+| `I18n#getChinese` | add Chinese translations |
+| `LyricsModule` | take over stock 3D lyric and HUD rendering while the module is enabled |
 
-代价很明确：这些全是本体的 `internal` / package-private 实现。本体哪天重构了 `SettingsPage`，注入就会失效。
+The cost is explicit: all of those are `internal` / package-private internals of the host. If
+DangoMusic ever refactors `SettingsPage`, the injection stops applying.
 
-因此所有注入都写了 `require = 0`——**注入失败只会让第三个标签不出现，不会因为 Mixin apply 失败让游戏崩溃**。启动后在 `logs/latest.log` 里搜 `[CityEchoes]` 能看到每个注入点的实际状态。
+That is why every injection uses `require = 0`. **A failed injection only means the third tab is
+missing; it will never crash the game through a failed Mixin apply.** Search `logs/latest.log` for
+`[CityEchoes]` to see the actual state of each injection point after launch.
 
-## 构建
+## Building
 
-需要 **JDK 21**（Loom 编译 1.21.1 目标用；编译 1.20.1 目标时它会把 toolchain 降到 17，所以只装 21 即可）和 **Gradle 8.11**——仓库自带 wrapper，不用自己装，9.x 与 Architectury Loom 1.13 不兼容。
+You need **JDK 21** (Loom uses it for the 1.21.1 target and lowers the toolchain to 17 for 1.20.1, so
+21 alone is enough) and **Gradle 8.11**. The wrapper is committed, so you don't have to install
+Gradle — note that 9.x is incompatible with Architectury Loom 1.13.
 
-仓库**不包含**依赖 jar（见 `.gitignore`），克隆后需要自己准备 `libs/`：
+Dependency jars are **not** committed (see `.gitignore`). Prepare `libs/` yourself:
 
 ```
 libs/
-├── DangoMusic-1.7.3+1.20.1-forge.jar      # 从 DangoMusic Releases 下载
-├── DangoMusic-1.7.3+1.21.1-neoforge.jar   # 同上，加载器对应
-└── mixin-patched-0.8.5.12.jar             # SpongePowered Mixin 0.8.5（patched）
+├── DangoMusic-1.7.3+1.20.1-forge.jar      # from DangoMusic Releases
+├── DangoMusic-1.7.3+1.21.1-neoforge.jar   # same, matching loader
+└── mixin-patched-0.8.5.12.jar             # SpongePowered Mixin 0.8.5 (patched)
 ```
 
-然后直接构建（wrapper 会拉 **Gradle 8.11**，9.x 与 Architectury Loom 1.13 不兼容）：
+Then:
 
 ```bash
-./gradlew build            # 两个目标一起出包
-./gradlew :1.20.1-forge:build
+./gradlew build                  # both targets
+./gradlew :1.20.1-forge:build    # one target
 ```
 
-产物在 `versions/<target>/build/libs/`，`remapJar` 的输出就是可用的 jar。
+Output lands in `versions/<target>/build/libs/`; the `remapJar` result is the jar you ship.
 
-`init.gradle.kts` 是给国内网络用的：Loom 会用 `exclusiveContent` 把 Forge / Mojang 仓库锁在官方源，普通 `repositories` 加镜像会被绕过，所以它改为在仓库注册后重写 URL 指向 BMCLAPI。直连正常时不需要加：
+`init.gradle.kts` exists for restricted networks (mainland China). Loom pins the Forge / Mojang
+repositories with `exclusiveContent`, so adding a mirror through the normal `repositories` block gets
+bypassed; the script instead rewrites repository URLs to BMCLAPI after they are registered. Skip it
+on a normal connection:
 
 ```bash
 ./gradlew build --init-script init.gradle.kts
 ```
 
-首次构建会在 `.gradle/` 下生成缓存，两个目标合计约需数分钟（Loom 要下载并 remap Minecraft 与 NeoForge）。
+The first build takes a few minutes for the two targets combined — Loom has to download and remap
+Minecraft and NeoForge.
 
-## 目录
+## Layout
 
 ```
 common/src/main/kotlin/me/cityechoes/
-├── CityEchoes.kt              演出核心：逐字母的运动学、波浪、倾斜、退场
-├── DangoBridge.kt             访问本体公开 API 的桥（含 shaded 类型适配）
-├── mods/CityEchoesModule.kt   模块本体：44 个 @ModuleValue 配置项 + 两处渲染
-├── ui/SettingsModel.kt        把 @ModuleValue 反射成设置页的分组/行模型
-├── ui/DangoSettingsBridge.kt  把上面的模型翻译成本体的 Group/Row（反射构造）
-├── ui/DangoSettingsZh.kt      中文词条
-├── ui/CityLog.kt              统一日志出口
-└── mixin/                     4 个注入点
-versions/1.20.1-forge/         Forge 入口 + mods.toml + mixin 配置
-versions/1.21.1-neoforge/      NeoForge 入口 + neoforge.mods.toml + mixin 配置
+├── CityEchoes.kt              performance core: per-letter kinematics, waves, tilt, exit
+├── DangoBridge.kt             bridge to the host's public API (incl. shaded-type handling)
+├── mods/CityEchoesModule.kt   the module: 44 @ModuleValue options + two render hooks
+├── ui/SettingsModel.kt        reflects @ModuleValue into a group/row model
+├── ui/DangoSettingsBridge.kt  translates that model into the host's Group/Row via reflection
+├── ui/DangoSettingsZh.kt      Chinese translations
+├── ui/CityLog.kt              single logging entry point
+└── mixin/                     the four mixin classes (six injection points)
+versions/1.20.1-forge/         Forge entry point + mods.toml + mixin config
+versions/1.21.1-neoforge/      NeoForge entry point + neoforge.mods.toml + mixin config
 ```
 
-## 许可证
+## License
 
-**GNU General Public License v3.0（GPL-3.0-only）**，全文见 [LICENSE](LICENSE)。
+**GNU General Public License v3.0 (GPL-3.0-only)**, full text in [LICENSE](LICENSE).
 
-这不是随便选的：本 addon 在运行期通过 Mixin **改写 DangoMusic（GPL-3.0）的字节码**，并在同一 JVM 内链接它的类，按 GPLv3 §5 属于「基于该程序的作品」，分发时必须整体按 GPLv3 授权。
+This is not arbitrary. At runtime the addon **rewrites DangoMusic's bytecode** through Mixin and
+links its classes inside the same JVM, which under GPLv3 §5 makes it a work based on that program —
+so distribution must be under GPLv3 as a whole. DangoMusic grants no "or any later version" clause,
+hence `GPL-3.0-only` rather than `-or-later`.
 
-因此：**你可以自由使用、修改、再分发，但如果分发二进制，必须同时提供完整源码。**
+In practice: **use it, modify it, redistribute it freely — but if you ship a binary, you must ship
+the complete source too.**
 
-第三方组件、版权归属与各自的许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
+Third-party components, attribution and their respective licenses are listed in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-## 致谢
+## Credits
 
-- [Sorihiko/DangoMusic](https://github.com/Sorihiko/DangoMusic) — 本体，本 addon 的宿主
-- [Celine258/idea-from-limbus-company-dancing-lyrics](https://github.com/Celine258/idea-from-limbus-company-dancing-lyrics) — City Echoes 演出效果的原作
+- [Sorihiko/DangoMusic](https://github.com/Sorihiko/DangoMusic) — the host mod
+- [Celine258/idea-from-limbus-company-dancing-lyrics](https://github.com/Celine258/idea-from-limbus-company-dancing-lyrics) — the original City Echoes performance
 
-本项目与 Mojang、Microsoft 无关联。"Minecraft" 是 Mojang Synergies AB 的商标。
+Not affiliated with Mojang or Microsoft. "Minecraft" is a trademark of Mojang Synergies AB.

@@ -15,7 +15,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "DangoMusic-CityEchoes"
+rootProject.name = "CityEchoes-In-DangoMusic"
 
 // 每个"Minecraft 版本 + 加载器"一个子项目，配置在 versions/<名字>/gradle.properties
 val targets = listOf("1.20.1-forge", "1.21.1-neoforge")

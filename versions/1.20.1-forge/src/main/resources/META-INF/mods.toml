@@ -6,7 +6,7 @@ issueTrackerURL=""
 [[mods]]
 modId="dangomusic_cityechoes"
 version="${version}"
-displayName="DangoMusic City Echoes"
+displayName="City Echoes in DangoMusic"
 authors="CityEchoes Addon"
 displayURL=""
 clientSideOnly=true

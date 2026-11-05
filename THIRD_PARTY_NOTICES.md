@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-This project (DangoMusic City Echoes) is licensed under **GPL-3.0-only**. See [LICENSE](LICENSE).
+This project (CityEchoes-In-DangoMusic) is licensed under **GPL-3.0-only**. See [LICENSE](LICENSE).
 
 It is built on, and at runtime modifies, other people's work. Those components and their
 licenses are listed below.

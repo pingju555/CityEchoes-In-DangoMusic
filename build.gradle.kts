@@ -11,7 +11,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 
 /*
- * DangoMusic City Echoes —— 独立 addon 构建。
+ * CityEchoes-In-DangoMusic —— 独立 addon 构建。
  * 仅依赖 dangomusic（modCompileOnly，不打包进 jar），用两个 Mixin 把都市回响模式注入 dangomusic。
  * 共用 Kotlin 源码在 common/src/main/kotlin；每个 loader 子项目提供自己的 mod 元数据 + mixins.json。
  */
@@ -46,7 +46,7 @@ subprojects {
 
     group = "me.cityechoes"
     version = modVersion
-    extensions.configure<BasePluginExtension> { archivesName.set("DangoMusic-CityEchoes") }
+    extensions.configure<BasePluginExtension> { archivesName.set("CityEchoes-In-DangoMusic") }
 
     // 共用 Kotlin 源码（与 loader 无关：只用到 dangomusic 公开 API + Mixin）
     val shared = rootProject.file("common/src/main/kotlin")
@@ -137,7 +137,7 @@ subprojects {
     tasks.named<RemapJarTask>("remapJar") {
         inputFile.set(shadowJar.flatMap { it.archiveFile })
         archiveVersion.set("$modVersion+$mcVersion")
-        archiveClassifier.set(loader) // DangoMusic-CityEchoes-1.0.0+1.20.1-forge.jar
+        archiveClassifier.set(loader) // CityEchoes-In-DangoMusic-1.2.4+1.20.1-forge.jar
     }
 
     tasks.named("build") { dependsOn("remapJar") }
