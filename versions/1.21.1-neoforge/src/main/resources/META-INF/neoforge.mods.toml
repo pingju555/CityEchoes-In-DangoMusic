@@ -1,0 +1,39 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="GPL-3.0-only"
+issueTrackerURL=""
+
+[[mods]]
+modId="dangomusic_cityechoes"
+version="${version}"
+displayName="DangoMusic City Echoes"
+authors="CityEchoes Addon"
+clientSideOnly=true
+description='''
+City Echoes lyric performance for Dango Music, shipped as a decoupled addon mod.
+Depends on DangoMusic (me.sorihiko.dango:dangomusic).
+'''
+
+[[dependencies.dangomusic_cityechoes]]
+modId="neoforge"
+type="required"
+versionRange="[21.1,)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.dangomusic_cityechoes]]
+modId="dangomusic"
+type="required"
+versionRange="[1.7.0,)"
+ordering="AFTER"
+side="CLIENT"
+
+[[dependencies.dangomusic_cityechoes]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_range}"
+ordering="NONE"
+side="CLIENT"
+
+[[mixins]]
+config = "dangomusic_cityechoes.mixins.json"

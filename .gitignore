@@ -1,0 +1,30 @@
+# Gradle / 构建产物
+.gradle/
+build/
+**/build/
+.kotlin/
+
+# 本地依赖 jar：体积大；且 DangoMusic 是本项目的上游，不随本仓库再分发
+libs/
+localrepo/
+
+# 已移除功能的历史代码备份（保留在本机，不进入版本库）
+_removed_kpage/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+
+# 系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 日志
+*.log

@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.cityechoes.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "DangoMusicMixin",
+    "LyricsModuleMixin",
+    "SettingsPageMixin",
+    "I18nMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

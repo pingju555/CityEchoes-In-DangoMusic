@@ -1,0 +1,40 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="GPL-3.0-only"
+issueTrackerURL=""
+
+[[mods]]
+modId="dangomusic_cityechoes"
+version="${version}"
+displayName="DangoMusic City Echoes"
+authors="CityEchoes Addon"
+displayURL=""
+clientSideOnly=true
+description='''
+City Echoes lyric performance for Dango Music, shipped as a decoupled addon mod.
+Depends on DangoMusic (me.sorihiko.dango:dangomusic).
+'''
+
+[[dependencies.dangomusic_cityechoes]]
+modId="dangomusic"
+mandatory=true
+versionRange="[1.7.0,)"
+ordering="AFTER"
+side="CLIENT"
+
+[[dependencies.dangomusic_cityechoes]]
+modId="forge"
+mandatory=true
+versionRange="[47,)"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.dangomusic_cityechoes]]
+modId="minecraft"
+mandatory=true
+versionRange="${minecraft_range}"
+ordering="NONE"
+side="CLIENT"
+
+# Mixin 配置不在这里声明：Forge 1.20.1 的 ModFileParser 不识别 [[mixins]] 块，
+# 只能靠 jar manifest 的 MixinConfigs 属性（由 build.gradle.kts 写入）。
