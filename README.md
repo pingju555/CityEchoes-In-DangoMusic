@@ -128,6 +128,34 @@ the complete source too.**
 Third-party components, attribution and their respective licenses are listed in
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
+## AI disclosure
+
+The code in this repository was written largely by an **AI coding assistant** — an LLM agent running
+inside [WorkBuddy](https://www.workbuddy.cn) — working under human direction. Being as specific as
+possible about the split:
+
+| Done by the AI | Done by a human |
+|---|---|
+| All Kotlin sources under `common/` and `versions/` | The requirement itself: pull the performance out into a decoupled addon |
+| Disassembling DangoMusic 1.7.3's bytecode with `javap` to locate the six injection points | Choosing the approach: public API only, `require = 0` on every injection, no Access Transformer |
+| The mixin classes, the reflection bridge, the Gradle setup | Choosing the license, the project name, and the shape of the third settings tab |
+| Both READMEs, `THIRD_PARTY_NOTICES.md`, commit messages | In-game verification, and every decision to keep or drop a feature |
+
+This says nothing about the upstream projects. DangoMusic and Celine258's original City Echoes are
+human-written, and nothing under `libs/` is AI output.
+
+What that means if you are going to run, fork or audit this thing:
+
+- The code was **verified in game on 1.20.1** (settings tab, sliders, config persistence) and its
+  1.21.1 injection targets were checked against that jar's bytecode — but it has **not** been through
+  a line-by-line human code review.
+- There is no test suite. Minecraft mods rarely have a meaningful one, and this project does not.
+- Expect the usual failure modes of generated code: over-defensive `try`/`catch`, comments that
+  describe behaviour slightly older than the code, redundant abstraction layers
+  (`DangoBridge.guarded` is dead code today).
+
+Corrections are welcome, including where this document and the shipped behaviour disagree.
+
 ## Credits
 
 - [Sorihiko/DangoMusic](https://github.com/Sorihiko/DangoMusic) — the host mod

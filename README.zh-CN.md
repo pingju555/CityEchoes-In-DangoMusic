@@ -115,6 +115,30 @@ versions/1.21.1-neoforge/      NeoForge 入口 + neoforge.mods.toml + mixin 配�
 
 第三方组件、版权归属与各自的许可见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
 
+## AI 使用说明
+
+本仓库的绝大部分代码由 **AI 编码助手**（运行在 [WorkBuddy](https://www.workbuddy.cn) 中的 LLM agent）
+在人类指令下写成。具体分工如下：
+
+| AI 完成 | 人类完成 |
+|---|---|
+| `common/` 与 `versions/` 下全部 Kotlin 源码 | 需求本身：把这套演出拆成解耦的 addon |
+| 用 `javap` 反编译 DangoMusic 1.7.3 的字节码，定位六个注入点 | 选定方案：只用公开 API、所有注入 `require = 0`、不用 Access Transformer |
+| Mixin 类、反射桥、Gradle 构建配置 | 选定许可证、项目名、第三个标签页的形态 |
+| 两份 README、`THIRD_PARTY_NOTICES.md`、提交信息 | 实机验证，以及每一次保留或舍弃某项功能的决定 |
+
+这条说明**不涉及上游项目**：DangoMusic 与 Celine258 的 City Echoes 原作都是人类写的，`libs/` 里没有 AI 产物。
+
+如果你打算运行、fork 或审计这个项目，需要知道：
+
+- 代码在 **1.20.1 上做过实机验证**（设置页、滑条、配置落盘），1.21.1 只把注入点与那份 jar 的字节码
+  逐项比对过；但**没有经过逐行的人工代码审查**。
+- 没有测试套件。Minecraft mod 本来也少有有意义的测试，本项目同样没有。
+- 生成代码的常见毛病这里大概率也有：过度防御的 `try`/`catch`、注释描述的是一版比代码更早的行为、
+  多余的抽象层（`DangoBridge.guarded` 目前就是死代码）。
+
+发现问题欢迎提 issue，包括本文档与实际行为对不上的地方。
+
 ## 致谢
 
 - [Sorihiko/DangoMusic](https://github.com/Sorihiko/DangoMusic) — 本体，本 addon 的宿主
