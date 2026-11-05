@@ -3,6 +3,10 @@
 
 # 批处理必须 CRLF，否则 cmd 解析出错
 gradlew.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# shell 脚本必须 LF，否则 Git Bash / WSL 会报 bad interpreter
+*.sh text eol=lf
 
 *.jar binary
 *.zip binary

@@ -73,8 +73,28 @@ Dependency jars are **not** committed (see `.gitignore`). Prepare `libs/` yourse
 libs/
 ├── DangoMusic-1.7.3+1.20.1-forge.jar      # from DangoMusic Releases
 ├── DangoMusic-1.7.3+1.21.1-neoforge.jar   # same, matching loader
-└── mixin-patched-0.8.5.12.jar             # SpongePowered Mixin 0.8.5 (patched)
+└── mixin-patched-0.8.5.12.jar             # dev.architectury:mixin-patched
 ```
+
+Or let the fetch script deal with it — it pulls from DangoMusic Releases and Architectury's
+maven, checks SHA-256, and skips anything already correct:
+
+```bash
+./tools/fetch-libs.sh            # macOS / Linux / Git Bash
+.\tools\fetch-libs.ps1           # Windows PowerShell
+```
+
+| flag | effect |
+|---|---|
+| `--force` / `-Force` | re-download even if the file exists |
+| `--verify-only` / `-VerifyOnly` | no network, just check `libs/` |
+| `--strict` / `-Strict` | treat any checksum surprise as fatal |
+
+Note on checksums: DangoMusic 1.7.3 exists in **two builds** upstream — the author re-uploaded the
+release assets after first publishing them, and the rebuild touched `NeteaseApi`, `GlassBackdrop`
+and the Chinese translations. Both are accepted, because the six classes this addon injects into
+are byte-identical in either build. An unknown hash is a warning rather than an error; add
+`--strict` if you want it to fail.
 
 Then:
 
@@ -111,6 +131,7 @@ common/src/main/kotlin/me/cityechoes/
 └── mixin/                     the four mixin classes (six injection points)
 versions/1.20.1-forge/         Forge entry point + mods.toml + mixin config
 versions/1.21.1-neoforge/      NeoForge entry point + neoforge.mods.toml + mixin config
+tools/                         fetch-libs.sh / fetch-libs.ps1 — dependency fetcher
 ```
 
 ## License

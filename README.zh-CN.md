@@ -66,8 +66,26 @@ addon 不改本体源码，而是用 SpongePowered Mixin 在运行期注入六�
 libs/
 ├── DangoMusic-1.7.3+1.20.1-forge.jar      # 从 DangoMusic Releases 下载
 ├── DangoMusic-1.7.3+1.21.1-neoforge.jar   # 同上，加载器对应
-└── mixin-patched-0.8.5.12.jar             # SpongePowered Mixin 0.8.5（patched）
+└── mixin-patched-0.8.5.12.jar             # dev.architectury:mixin-patched
 ```
+
+也可以直接让脚本代劳——它从 DangoMusic Releases 与 Architectury 的 maven 拉取，校验 SHA-256，
+已经正确的文件就跳过：
+
+```bash
+./tools/fetch-libs.sh            # macOS / Linux / Git Bash
+.\tools\fetch-libs.ps1           # Windows PowerShell
+```
+
+| 参数 | 作用 |
+|---|---|
+| `--force` / `-Force` | 即使文件已存在也重新下载 |
+| `--verify-only` / `-VerifyOnly` | 不联网，只校验 `libs/` |
+| `--strict` / `-Strict` | 任何校验和异常都当作失败 |
+
+关于校验和有个坑值得说明：DangoMusic 1.7.3 上游存在**两个构建**——作者首次发布后重传过 Release
+资产，重传版本改动了 `NeteaseApi`、`GlassBackdrop` 和中文翻译。脚本对两者都放行，因为本 addon
+注入的那六个类在两个构建里**字节完全相同**。遇到未知哈希只警告、不报错；要严格失败就加 `--strict`。
 
 然后直接构建：
 
@@ -101,6 +119,7 @@ common/src/main/kotlin/me/cityechoes/
 └── mixin/                     4 个注入类（共 6 个注入点）
 versions/1.20.1-forge/         Forge 入口 + mods.toml + mixin 配置
 versions/1.21.1-neoforge/      NeoForge 入口 + neoforge.mods.toml + mixin 配置
+tools/                         依赖抓取脚本 fetch-libs.sh / fetch-libs.ps1
 ```
 
 ## 许可证
